@@ -16,7 +16,7 @@ import (
 	"github.com/coyove/iis/common"
 	"github.com/coyove/iis/dal"
 	"github.com/coyove/iis/dal/forgettable/goforget"
-	"github.com/coyove/iis/dal/kv/cache"
+	"github.com/wxcgeek/iis2/dal/kv/cache"
 	"github.com/coyove/iis/ik"
 	"github.com/coyove/iis/middleware"
 	"github.com/coyove/iis/model"
