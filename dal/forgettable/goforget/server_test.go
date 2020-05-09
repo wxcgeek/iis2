@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/coyove/iis/dal/kv/cache"
+	"github.com/wxcgeek/iis2/dal/kv/cache"
 )
 
 func TestServer(t *testing.T) {

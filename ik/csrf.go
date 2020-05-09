@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/coyove/common/lru"
-	"github.com/coyove/iis/common"
-	"github.com/coyove/iis/ik/captcha"
-	"github.com/coyove/iis/model"
+	"github.com/wxcgeek/iis2/common"
+	"github.com/wxcgeek/iis2/ik/captcha"
+	"github.com/wxcgeek/iis2/model"
 	"github.com/gin-gonic/gin"
 )
 

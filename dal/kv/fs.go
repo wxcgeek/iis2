@@ -11,8 +11,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/coyove/iis/common"
-	"github.com/coyove/iis/dal/kv/cache"
+	"github.com/wxcgeek/iis2/common"
+	"github.com/wxcgeek/iis2/dal/kv/cache"
 	//sync "github.com/sasha-s/go-deadlock"
 )
 

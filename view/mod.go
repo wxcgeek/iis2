@@ -3,9 +3,9 @@ package view
 import (
 	"fmt"
 
-	"github.com/coyove/iis/dal"
-	"github.com/coyove/iis/ik"
-	"github.com/coyove/iis/model"
+	"github.com/wxcgeek/iis2/dal"
+	"github.com/wxcgeek/iis2/ik"
+	"github.com/wxcgeek/iis2/model"
 	"github.com/gin-gonic/gin"
 )
 

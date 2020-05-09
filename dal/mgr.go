@@ -10,11 +10,11 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/coyove/iis/common"
-	"github.com/coyove/iis/dal/kv"
-	"github.com/coyove/iis/dal/kv/cache"
-	"github.com/coyove/iis/ik"
-	"github.com/coyove/iis/model"
+	"github.com/wxcgeek/iis2/common"
+	"github.com/wxcgeek/iis2/dal/kv"
+	"github.com/wxcgeek/iis2/dal/kv/cache"
+	"github.com/wxcgeek/iis2/ik"
+	"github.com/wxcgeek/iis2/model"
 )
 
 var Masters = 10

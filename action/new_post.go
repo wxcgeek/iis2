@@ -8,12 +8,12 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/coyove/iis/common"
-	"github.com/coyove/iis/dal"
-	"github.com/coyove/iis/ik"
-	"github.com/coyove/iis/middleware"
-	"github.com/coyove/iis/model"
-	"github.com/coyove/iis/view"
+	"github.com/wxcgeek/iis2/common"
+	"github.com/wxcgeek/iis2/dal"
+	"github.com/wxcgeek/iis2/ik"
+	"github.com/wxcgeek/iis2/middleware"
+	"github.com/wxcgeek/iis2/model"
+	"github.com/wxcgeek/iis2/view"
 	"github.com/gin-gonic/gin"
 )
 

@@ -3,7 +3,7 @@ package goforget
 import (
 	"log"
 
-	"github.com/coyove/iis/dal/kv/cache"
+	"github.com/wxcgeek/iis2/dal/kv/cache"
 )
 
 const rate = 0.5

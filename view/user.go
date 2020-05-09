@@ -7,11 +7,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/coyove/iis/common"
-	"github.com/coyove/iis/dal"
-	"github.com/coyove/iis/ik"
-	"github.com/coyove/iis/middleware"
-	"github.com/coyove/iis/model"
+	"github.com/wxcgeek/iis2/common"
+	"github.com/wxcgeek/iis2/dal"
+	"github.com/wxcgeek/iis2/ik"
+	"github.com/wxcgeek/iis2/middleware"
+	"github.com/wxcgeek/iis2/model"
 	"github.com/gin-gonic/gin"
 	"github.com/nullrocks/identicon"
 )

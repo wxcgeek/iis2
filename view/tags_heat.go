@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/coyove/iis/dal"
-	"github.com/coyove/iis/dal/forgettable/goforget"
-	"github.com/coyove/iis/ik"
+	"github.com/wxcgeek/iis2/dal"
+	"github.com/wxcgeek/iis2/dal/forgettable/goforget"
+	"github.com/wxcgeek/iis2/ik"
 	"github.com/gin-gonic/gin"
 )
 

@@ -6,7 +6,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/coyove/iis/dal/kv/cache"
+	"github.com/wxcgeek/iis2/dal/kv/cache"
 	"github.com/gomodule/redigo/redis"
 )
 

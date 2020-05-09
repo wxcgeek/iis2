@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/coyove/iis/model"
+	"github.com/wxcgeek/iis2/model"
 	"github.com/gin-gonic/gin"
 )
 
