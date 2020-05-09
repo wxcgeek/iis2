@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+    <head>
+    <link href="/s/fonts/fontello-embedded.css?ver=27" rel="stylesheet" type="text/css" media="all">
+    <script src="/s/js/default.35.js"></script>
+    <script src="/s/js/newgen.1.js"></script>
+    <script src="/s/js/post.16.js"></script>
+    <script src="/s/js/tribute.min.js"></script>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="/s/assets/favicon.png">
+
+    <script>
+        (function() {
+            var mode = isDarkMode() ? '.dark' : '';
+            document.write('<link href="/s/css/default.tmpl.css'+mode+'{{cssVersion}}" rel="stylesheet" type="text/css" media=all>')
+            document.write('<link href="/s/css/third.tmpl.css'+mode+'{{cssVersion}}" rel="stylesheet" type="text/css" media=all>')
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
+                document.write('<style>body, button, input, textarea {font-size: 16px }</style>')
+            }
+        })()
+
+        window.TRIBUTE_COL = {
+            trigger: '@',
+            selectClass: 'highlight',
+            containerClass: 'tribute-container',
+            selectTemplate: function (item) { return '@' + item.original.key; },
+            menuContainer: document.body,
+            lookup: 'key',
+            values: function remoteSearch(text, cb) {
+                $post("/api/search", { id: text }, function(results) {
+                    if (results && results.length) {
+                        results.forEach(function(t, i) {
+                            results[i] = { key: t.substring(1) } 
+                        });
+                        JSON.parse(window.localStorage.getItem('presets') || '[]')
+                            .filter(function(t){ return t; })
+                            .forEach(function(t) { results.push({ key: t.substring(1) }) });
+                        var seen = {};
+                        results = results.filter(function(item) {
+                            return seen.hasOwnProperty(item.key) ? false : (seen[item.key] = true);
+                        });
+                        cb(results);
+                    }
+                })
+            },
+            replaceTextSuffix: '\n',
+            positionMenu: true,
+        }
+
+        window.TRIBUTE_COL_TAGS = {
+            trigger: '#',
+            selectClass: 'highlight',
+            containerClass: 'tribute-container',
+            selectTemplate: function (item) { return '#' + item.original.key; },
+            menuContainer: document.body,
+            lookup: 'key',
+            values: window.TRIBUTE_COL.values,
+            replaceTextSuffix: '\n',
+            positionMenu: true,
+        }
+
+        window.TRIBUTER = new Tribute({
+            collection: [window.TRIBUTE_COL, window.TRIBUTE_COL_TAGS],
+        });
+
+        window.onmousemove = function(e) {
+            if (!window.REGTICK) {
+                window.requestAnimationFrame(function() {
+                    var x = e.clientX || e.left, y = e.clientY || e.top;
+                    window.REGIONS = (window.REGIONS || []).filter(function(rect) { return rect.valid; })
+                    window.REGIONS.forEach(function(rect) {
+                        var inside = false, margin = 5;
+                        rect.boxes.forEach(function(el) {
+                            var box = el.getBoundingClientRect();
+                            inside = inside || (
+                                x >= box.left - margin &&
+                                x <= box.right + margin &&
+                                y >= box.top - margin &&
+                                y <= box.bottom + margin);
+                        })
+                        if (!inside) {
+                            try {
+                                rect.callback(x, y);
+                            } catch(e) {
+                                console.log(e)
+                            }
+                            rect.valid = false;
+                        }
+                    })
+                    window.REGTICK = false;
+                });
+                window.REGTICK = true;
+            }
+        }
+        window.ontouchend = function(e) {
+            var el = e.changedTouches[0];
+            if (el) window.onmousemove(el);
+        }
+    </script>
+    </head>
+
+<body style="height: 100%">
+    <div id="container" style="display:flex;flex-direction:column" class=container>
+        <nav>
+            <a href="/t/master"><i class="icon-flow-merge"></i> 广场</a>
+            <a href="/t"><i class="icon-home"></i></a>
+            <a href="/likes/master"><i class="icon-heart-filled"></i></a>
+            <a href="/inbox" id=unread-notify><i class="icon-mail-alt"></i><b></b></a>
+            <a href="/user"><i class="icon-cog"></i></a>
+        </nav>
+        <div id="main-content" style="flex: 1 0 auto">
+

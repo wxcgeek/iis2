@@ -1,0 +1,113 @@
+<div class="status">
+    <div class="title row-header" style="">
+        <div style="white-space:nowrap;display:inline-block">
+            <img class="avatar" src="/avatar/{{.ID}}.jpg?q={{.Avatar}}" style="cursor:pointer;margin:0"
+                                                                        onclick="this.nextElementSibling.click()">
+            <input type=file style="display:none" onchange="onAvatarChanged(this)">
+            <button class="gbutton tmpl-normal-text" onclick="this.previousElementSibling.click()">
+                <i class=icon-camera></i>
+            </button>
+        </div>
+        <div style="flex:1 100%;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            {{template "display_name.html" .}}
+        </div>
+        <div style="flex:0 48px;margin:0;white-space:nowrap">
+            <a class="gbutton tmpl-normal-text" href="/user">
+                <i class="icon-cog"></i>
+            </a>
+            <div style="display:inline-block">
+                <div class="post-options post-options-emoji" onmouseover="loadKimochi(this)">
+                    <img src="/s/emoji/emoji{{.Kimochi}}.png" style="vertical-align: middle" kimochi={{.Kimochi}} class=kimochi-selector>
+                    <ul style="margin-left:-216px;direction:rtl"></ul>
+                </div>
+            </div>
+        </div>
+        <div class=tri></div>
+    </div>
+
+    <div class=title>
+        <div style="display:flex;width:100%;border:dotted 1px transparent;margin:0.5em 0 0;border-radius:4px" class="tmpl-border tmpl-input-bg">
+        <input
+            style="width:100%;border:none;text-align:left"
+            placeholder="个人简介"
+            class=t
+            value="{{.Settings.Description}}">
+        <button class="gbutton tmpl-green-text"
+                style="margin:0.25em;flex-shrink:0"
+                onclick="updateSetting(this, 'description', this.previousElementSibling.value)">更新</button>
+        </div>
+    </div>
+
+    <div class=title>
+        <span>
+            <a href="/user/followings"><b>{{.Followings}}</b> <span class=sub-status>关注</span></a>
+        </span>
+        <span>
+            <a href="/user/followers"><b>{{.Followers}}</b> <span class=sub-status>粉丝</span></a>
+        </span>
+        <span title="我的黑名单">
+            <a href="/user/blacklist"><i class="icon-block"></i> <span class=sub-status>黑名单</span></a>
+        </span>
+    </div>
+</div>
+
+<script>
+function onAvatarChanged(el) {
+    if (!el.value) return;
+
+    var reader = new FileReader();
+    reader.readAsDataURL(el.files[0]);
+    reader.onload = function () {
+        var img = new Image();
+        img.onerror = function() {
+            $popup("加载头像失败")
+        }
+        img.onload = function() {
+            img.onload = null;
+            var canvas = document.createElement("canvas"), throt = 150 * 1000, f = 1,
+                success = function() {
+                    console.log((img.src.length / 1.33 / 1024).toFixed(0) + "KB", f);
+                    var data = {}, a = el.previousElementSibling;
+                    var btnstop = $wait(el.nextElementSibling)
+                    var stop = function() {
+                        a.src = a.OLD_SRC;
+                        btnstop();
+                    }
+
+                    a.OLD_SRC = a.src;
+                    a.src = '/s/assets/spinner.gif'
+
+                    data["set-avatar"] = "1";
+                    data["avatar"] = img.src;
+                    $post("/api/user_settings", data, function(h, h2) {
+                        stop();
+                        if (h === 'ok') a.src = a.OLD_SRC + "&random=" + new Date().getTime();
+                        return (h !== 'ok') ? h : "ok:更新成功，由于缓存原因新头像可能不会立即生效";
+                    }, stop)
+                };
+
+            if (img.src.length > throt) {
+                if (img.src.match(/image\/gif/)) {
+                    img.onerror();
+                    return;
+                }
+                var ctx = canvas.getContext('2d');
+                canvas.width = img.width; canvas.height = img.height;
+                ctx.drawImage(img,0,0);
+                for (f = 0.8; f > 0; f -= 0.2) {
+                    var res = canvas.toDataURL("image/jpeg", f);
+                    if (res.length <= throt) {
+                        img.src = res;
+                        success();
+                        return;
+                    }
+                }
+                img.onerror();
+            } else {
+                success();
+            }
+        }
+        img.src = reader.result;
+    };
+}
+</script>

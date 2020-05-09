@@ -1,0 +1,342 @@
+{{template "header.html" .}}
+
+{{if .User}}
+
+<title>{{.User.DisplayName}}</title>
+
+    <style>
+.articles tr td:last-child {
+    word-break: break-all;
+}
+    </style>
+
+    <div class="status-box">
+        <div>{{template "user_private.html" .User}}</div>
+    </div>
+
+    <div class="status-box" >
+        <div class="status">
+            <div class="title row-header" style="text-align:center"><b style="flex-grow: 1">用户信息</b></div>
+
+            <div class=title>
+                <table class="articles" style="margin-top: 0.5em;text-align:left">
+                    <tr>
+                        <td>上次登入:</td>
+                        <td style='text-align:right'>{{.User.Login.Format "2006-01-02 15:04:05"}}</td>
+                    </tr>
+                    <tr>
+                        <td>注册于:</td>
+                        <td style='text-align:right'>{{.User.Signup.Format "2006-01-02 15:04:05"}}</td>
+                    </tr>
+                    <tr>
+                        <td class=nowrap>上次登入IP:</td>
+                        <td>
+                            <input readonly class=t style="font-family:monospace;border:none;text-align:right" value="{{.User.DataIP}}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan=2 style="text-align:center">
+                            <a class="gbutton tmpl-red-text" href="#"
+                               onclick="confirm('确认登出 {{.User.DisplayName}}')?$postReload(this, '/api2/logout',{}):0">
+                                <i class="icon-logout"></i> 退出账号
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-box">
+        <div class="status">
+            <div class="title row-header" style="text-align:center"><b style="flex-grow: 1">昵称 @ID</b></div>
+
+            <div class=title>
+                <table class="articles" style="margin: 0.5em 0;text-align:left">
+                    <tr>
+                        <td>
+                            <input name=custom-name class=t value="{{.User.CustomName}}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class=nowrap style="text-align:center">
+                            <button class=gbutton onclick="updateSetting(this,'custom-name',$q('[name=custom-name]').value)">
+                                更新昵称
+                            </button>
+                        </td>
+                    </tr> 
+
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-box">
+        <div class="status">
+            <div class="title row-header" style="text-align:center"><b style="flex-grow: 1">一般设置</b></div>
+
+            <div class=title>
+                <table class="articles" style="margin: 0.5em 0;text-align:left">
+                    <tr>
+                        <td>
+                            <input type=checkbox
+                                   id=darkmode
+                                   class=icon-input-checkbox
+                                   onchange="document.cookie='mode='+(this.checked?'dark':'')+';expires=Sun, 07 Apr 2030 01:27:11 GMT';location.reload()">
+                            <i class='icon-ok-circled2'></i>
+                            <label for=darkmode>暗色主题</label>
+                            <script>if(isDarkMode())$q("#darkmode").checked=true</script>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type=checkbox {{if .User.Settings.AutoNSFW}}checked{{end}} id=autonsfw
+                                   class=icon-input-checkbox
+                                   onchange="updateSetting(this,'autonsfw',this.checked?'1':'')">
+                            <i class='icon-ok-circled2'></i>
+                            <label for=autonsfw>自动展开NSFW图片</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type=checkbox {{if .User.Settings.FoldImages}}checked{{end}} id=foldimg
+                                   class=icon-input-checkbox
+                                   onchange="updateSetting(this,'foldimg',this.checked?'1':'')">
+                            <i class='icon-ok-circled2'></i>
+                            <label for=foldimg>收起图片减少流量</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type=checkbox {{if .User.Settings.OnlyMyFollowingsCanMention}}checked{{end}} id=mfcm
+                                   class=icon-input-checkbox
+                                   onchange="updateSetting(this,'mfcm',this.checked?'1':'')">
+                            <i class='icon-ok-circled2'></i>
+                            <label for=mfcm>屏蔽我没关注的人的回复和@提醒</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type=checkbox {{if .User.Settings.OnlyMyFollowingsCanFollow}}checked{{end}} id=mffm
+                                   class=icon-input-checkbox
+                                   onchange="updateSetting(this,'mffm',this.checked?'1':'')">
+                            <i class='icon-ok-circled2'></i>
+                            <label for=mffm>只有我关注的人可以关注我</label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-box">
+        <div class="status">
+            <div class="title row-header" style="text-align:center"><b style="flex-grow: 1">隐私</b></div>
+
+            <div class=title>
+                <table class="articles" style="margin-top: 0.5em;text-align:left">
+                    <tr>
+                        <td>
+                            <input type=checkbox {{if .User.Settings.DoFollowerNeedsAcceptance}}checked{{end}} id=fw-accept
+                                   class=icon-input-checkbox
+                                   onchange="updateSetting(this,'fw-accept',this.checked?'1':'')">
+                            <i class='icon-ok-circled2'></i>
+                            <label for=fw-accept>新关注者关注我前需要我的确认</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div>1. 未确认的关注者无法查看你的时间线，如果你在广场发言，或被他人转发，则无法阻止这类关注者看到你的状态</div>
+                            <div>2. 如果限制了只有“关注者”可以回复你的状态，则这类人无法回复你</div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-box">
+        <div class="status">
+            <div class="title row-header" style="text-align:center"><b style="flex-grow: 1">安全</b></div>
+
+            <div class=title>
+                <table class="articles" style="margin-top: 0.5em;text-align:left">
+                    <tr>
+                        <td class=nowrap>Email:</td>
+                        <td>
+                            <input name=email class=t value="{{.User.Email}}" type=email>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class=nowrap colspan=2 style="text-align:center">
+                            <button class=gbutton onclick="updateSetting(this,'email',$q('[name=email]').value)">
+                                更新邮箱
+                            </button>
+                        </td>
+                    </tr> 
+                    <tr>
+                        <td class=nowrap>原密码:</td>
+                        <td><input name=old-password type=password class=t></td>
+                    </tr>
+                    <tr>
+                        <td class=nowrap>新密码:</td>
+                        <td><input name=new-password type=password class=t></td>
+                    </tr>
+                    <tr>
+                        <td colspan=2 style="text-align:center">
+                            <button
+                                class="gbutton"
+                                onclick="$post('/api2/user_password', {
+                                'old-password': $q('[name=old-password]').value,
+                                'new-password': $q('[name=new-password]').value,
+                                }, function(h) { return h })">更新密码</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+<table class="articles" style="margin: 0.5em 0">
+    {{if .User.IsAdmin}}
+    <tr>
+        <td colspan=2>
+            <a href="/debug/pprof/">pprof</a>
+        </td>
+    </tr>
+    {{end}}
+    {{if .User.IsMod}}
+    <tr>
+        <td class=nowrap>最大耗时:</td>
+        <td>{{.Survey.Max}}ms</td>
+    </tr>
+    <tr>
+        <td class=nowrap>流出流量:</td>
+        <td>{{.Survey.Written}}b</td>
+    </tr>
+    {{end}}
+</table>
+
+{{else}}
+
+<title>注册</title>
+
+    <div class=row style="text-align:center;padding:0.5em;margin-top:0">
+        <a href="/" class=gbutton>已有账号？点此登入</a>
+    </div>
+
+<form method="POST" action="/user" onsubmit='
+                    var username = $q("[name=username]").value || "";
+                    var password = $q("[name=password]").value || "";
+
+                    if (username.length < 3) {
+                        $popup("用户名过短 (>=3字节)")
+                        return false;
+                    }
+
+                    if (password.length < 3) {
+                        $popup("密码过短 (>=3字节)")
+                        return false;
+                    }
+
+                    var stop = $wait($q("[type=submit]"))
+                    $post("/api2/signup", {
+                        username: username,
+                        password: password,
+                        email: $q("[name=email]").value,
+                        uuid: $q("[name=uuid]").value,
+                        answer: $q("[name=answer]").value,
+                    }, function(r) {
+                        stop();
+                        if (r !== "ok") {
+                            refreshCaptcha();
+                            return r;
+                        }
+                        location.reload();
+                    }, stop)
+
+                    return false;'>
+    <table class="articles">
+
+    <input type=hidden name=uuid value="{{.UUID}}">
+    <tr>
+        <td>用户名:</td>
+        <td><input class=t maxlength=15 name=username onkeyup="checkID(this.value)"></td>
+    <script>
+        function checkID(id) {
+            var x = [], j = 0, filtered = false;
+            for (var i = 0 ; i < id.length; i++) {
+                var c = id.charCodeAt(i);
+                j++;
+                if (j > 15) break
+                if (c == 46 || c == 45 || c == 95 || c == 33 || c == 126) x.push(c)
+                else if (c >= 48 && c <= 57) x.push(c)
+                else if (c >= 65 && c <= 90) x.push(c)
+                else if (c >= 97 && c <= 122) x.push(c)
+                else if (c >= 0x2000 && c <= 0x9fff) {
+                    j++;
+                    if (j > 15) break
+                    x.push(c);
+                } else {
+                    filtered = true;
+                    x.push(95)
+                }
+            }
+            $q("#id-output").innerHTML = "<b style='font-family:monospace'>@" + String.fromCharCode.apply(null, x) +
+                (filtered ? "&emsp;<span class=tmpl-red-text>(注意: 非法字符已过滤)</span></b>" : "</b>");
+        }
+    </script>
+    </tr>
+    <tr>
+        <td></td><td id="id-output">3~15英文，2~7中文</td>
+    </tr>
+    <tr>
+        <td class=nowrap>密码: </td>
+        <td><input type=password class=t name=password></td>
+    </tr>
+    <tr>
+        <td class=nowrap></td>
+        <td>
+            至少3英文字符，
+            <input type=checkbox class='icon-input-checkbox'
+                id=show-password onchange="$q('[name=password]').type=this.checked?'text':'password'">
+            <i class='icon-ok-circled2'></i>
+            <label for=show-password>显示密码</label>
+        </td>
+    </tr>
+    <tr>
+        <td>Email:</td>
+        <td><input type=email class=t name=email></td>
+    </tr>
+    <tr><td></td></tr>
+    <tr>
+        <td class=nowrap rowspan=2>验证码:</td>
+        <td>
+            <a href="javascript:refreshCaptcha()">
+                <img name=captcha src="data:image/png;base64,{{.Challenge}}" style="background: white">
+            </a>
+    <script>
+        function refreshCaptcha() {
+            var stop = $wait($q("button[type=submit]"))
+            $post('/api/new_captcha', {}, function(r) {
+                $q("[name=captcha]").src = "data:image/png;base64," + r.Challenge;
+                $q("[name=uuid]").value = r.UUID;
+                $q("[name=answer]").value = '';
+                stop();
+            }, stop)
+        }
+    </script>
+        </td>
+    </tr>
+    <tr>
+        <td><input size=6 maxlength=4 name="answer" style="padding: 0.5em"></td>
+    </tr> 
+    <tr>
+        <td></td> <td style="text-align:right">
+            <button class="gbutton" type=submit>注册</button>
+        </td>
+    </tr>
+</table>
+</form>
+{{end}}
+

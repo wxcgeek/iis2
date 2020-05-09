@@ -1,0 +1,127 @@
+{{$isInboxLike := or (eq .Cmd "inbox-like") (eq .Cmd "inbox-fw-accepted")}}
+
+<div data-id="{{.ID}}" style="padding:0.5em 0.5em 0 0.5em" class="row">
+    <div class="row-header" style="line-height:{{if .NoAvatar}}24px{{else}}36px{{end}};display:flex">
+        {{if not .NoAvatar}}
+        <div class=avatar-container>
+            <img class="avatar" alt="{{.Author.ID}}" src="/avatar/{{.Author.ID}}.jpg?q={{.Author.Avatar}}"
+                                                     onmouseenter="showInfoBox(this,'{{.Author.ID}}')">
+            {{if .Author.Kimochi}}
+            <img class="avatar-kimochi" src="/s/emoji/emoji{{.Author.Kimochi}}.png">
+            {{end}}
+        </div>
+            {{template "display_name.html" .Author}}
+        {{else}}
+        <span class="post-author mentioned-user" onclick="this.querySelector('a').href='javascript:void(0)';showInfoBox(this,'{{.Author.ID}}')">
+            {{template "display_name.html" .Author}}
+        </span>
+        {{end}}
+
+
+    {{if eq .Cmd "inbox-reply"}}
+        <span class=post-date>于 {{formatTime .CreateTime}} 回复了你</span>
+    {{else if eq .Cmd "inbox-mention"}}
+        <span class=post-date>于 {{formatTime .CreateTime}} @了你</span>
+    {{else if eq .Cmd "inbox-fw-accepted"}}
+        <span class=post-date>于 {{formatTime .CreateTime}} 承认了你的关注</span>
+    {{else if $isInboxLike}}
+        <span class=post-date>于 {{formatTime .CreateTime}} 喜欢了你的状态</span>
+    {{else}}
+        {{if .You.IsMod}}
+        <span>
+            <a href="/mod/user?uid={{.Author.ID}}" target=_blank><i class="icon-export-alt"></i></a>
+        </span>
+        {{end}}
+        {{if .Parent}}
+            {{if .Content}}
+                <span class=post-date>回复于 {{formatTime .CreateTime}}</span>
+            {{else}}
+                <span class=post-date>转发于 {{formatTime .CreateTime}}</span>
+            {{end}}
+        {{else}}
+            <span class=post-date>发布于 {{formatTime .CreateTime}}</span>
+        {{end}}
+    {{end}}
+    </div>
+
+    {{if .ContentHTML}}
+    <pre style="font-size:110%;padding:0.5em 0 0">{{.ContentHTML}}</pre>
+    {{end}}
+
+    {{if eq .MediaType "IMG"}}
+        <div style="margin-top:0.5em;" class=media>
+            {{if or .NSFW .You.Settings.FoldImages}}
+                <button
+                    class="gbutton {{if .NSFW}}tmpl-orange-text{{else}}tmpl-normal-text{{end}}"
+                    onclick="this.style.display='none';
+                        this.nextElementSibling.querySelector('img').src='{{.Media}}?thumb=1'"
+                        class="gbutton nsfw-clicker">
+                    {{if .NSFW}}展开<i class="icon-transgender-alt"></i>NSFW图片{{else}}展开图片{{end}}
+                </button>
+                <a href="{{.Media}}" target=_blank><img onload="adjustImage(this)"></a>
+            {{else}}
+                <a href="{{.Media}}" target=_blank><img onload="adjustImage(this)" src="{{.Media}}?thumb=1"></a>
+            {{end}}
+            <span class=long-image>长图</span>
+        </div>
+    {{end}}
+
+    {{if and .You.IsMod .History}}
+    <div class=tmpl-mid-text style="font:12px monospace">{{.History}}</div>
+    {{end}}
+
+    {{if not $isInboxLike}}
+    <div class=foobar>
+        {{if .StickOnTop}}
+        {{if or (eq .You.ID .Author.ID) .You.IsMod}}
+            <a class="reply-box" href="javascript:void(0)" onclick="dropTopArticle(this, '{{.ID}}')">
+                <i class="icon-bullhorn"></i> 置顶
+            </a>
+        {{else}}
+            <a class="reply-box tmpl-normal-text" style="font-weight:bold" href="javascript:void(0)">
+                <i class="icon-bullhorn"></i> 置顶
+            </a>
+        {{end}}
+        {{end}}
+
+        <a class="reply-box {{if .NoReply}}tmpl-light-text{{end}}" href="javascript:showReply('{{.ID}}')">
+            <i class="icon-reply-outline"></i>
+            {{if .Replies}}{{.Replies}}{{end}}
+        </a>
+        <a class="reply-box" href="javascript:void(0)" onclick="likeArticle(this, '{{.ID}}')" liked={{.Liked}}>
+            <i class="icon-heart-{{if .Liked}}filled{{else}}1{{end}}"></i> <span class=num>{{if .Likes}}{{.Likes}}{{end}}</span>
+        </a>
+        {{if or (eq .You.ID .Author.ID) .You.IsMod}}
+        <a class="reply-box" href="javascript:void(0)" onclick="lockArticle(this,'{{.ID}}')" value="{{.ReplyLockMode}}">
+            {{if .ReplyLockMode}}
+            <i class="tmpl-normal-text icon-lock"></i>
+            {{else}}
+            <i class="tmpl-light-text icon-lock-open"></i>
+            {{end}}
+        </a>
+        <a class="tmpl-red-text reply-box" href="javascript:void(0)" onclick="deleteArticle(this,'{{.ID}}')">
+            <i class="icon-trash"></i>
+        </a>
+        {{if eq .MediaType "IMG"}}
+        <a class="reply-box" href="javascript:void(0)" onclick="nsfwArticle(this,'{{.ID}}')" value={{.NSFW}}>
+            <i class="icon-transgender-alt"></i>
+        </a>
+        {{end}}
+        {{end}}
+    </div>
+    {{end}}
+
+    {{if .Parent}}
+    {{if .Parent.ID}}
+    <div style="position:relative;margin:0 -0.5em;{{if not $isInboxLike}}border-top:solid 1px transparent{{end}}" class="tmpl-border quoted-sep">
+        <div style="position:absolute;left:0.5em;top:0.5em" class=tmpl-light-text>
+            <i class=icon-quote-left></i>
+        </div>
+    </div>
+
+    <div class="subreply">
+        {{template "row_content.html" .Parent}}
+    </div>
+    {{end}}
+    {{end}}
+</div>
