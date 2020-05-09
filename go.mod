@@ -1,4 +1,4 @@
-module github.com/coyove/iis
+module github.com/wxcgeek/iis2
 
 go 1.13
 
